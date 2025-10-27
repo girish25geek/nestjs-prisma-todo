@@ -23,15 +23,24 @@ let TodoService = class TodoService {
         return this.prisma.todo.findMany();
     }
     async findOne(id) {
-        return this.prisma.todo.findUnique({ where: { id } });
+        const todo = await this.prisma.todo.findUnique({ where: { id } });
+        if (!todo)
+            throw new common_1.NotFoundException(`Todo with id ${id} not found`);
+        return todo;
     }
     async update(id, updateTodoDto) {
+        const existing = await this.prisma.todo.findUnique({ where: { id } });
+        if (!existing)
+            throw new common_1.NotFoundException(`Todo with id ${id} not found`);
         return this.prisma.todo.update({
             where: { id },
             data: updateTodoDto,
         });
     }
     async remove(id) {
+        const existing = await this.prisma.todo.findUnique({ where: { id } });
+        if (!existing)
+            throw new common_1.NotFoundException(`Todo with id ${id} not found`);
         return this.prisma.todo.delete({ where: { id } });
     }
 };
